@@ -1,0 +1,8 @@
+{
+  "name": "code-review-minus-2-demo",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "is-number": "6.0.0"
+  }
+}

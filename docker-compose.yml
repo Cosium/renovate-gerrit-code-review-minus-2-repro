@@ -1,0 +1,25 @@
+name: renovate-gerrit-code-review-minus-2
+
+services:
+  gerrit:
+    image: gerritcodereview/gerrit:3.15.0
+    ports:
+      - 127.0.0.1::8080
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/config/server/version"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  renovate:
+    image: renovate/renovate:44.252.1
+    profiles: [renovate]
+    environment:
+      RENOVATE_CONFIG_FILE: /repro/config.js
+      LOG_LEVEL: info
+      LOG_FILE: /repro/logs/${LOG_NAME:-renovate}.log
+      LOG_FILE_LEVEL: debug
+      GERRIT_URL: http://gerrit:8080/
+    volumes:
+      - ./config.js:/repro/config.js:ro
+      - ./logs:/repro/logs
