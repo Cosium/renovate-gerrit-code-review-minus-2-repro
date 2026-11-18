@@ -112,9 +112,9 @@ const runRenovate = (
   renovatePassword: string,
   workDirectory: string,
 ): void => {
-  const name = `${logPrefix}-run${renovateRunNumber}`;
-  log(`Renovate run ${renovateRunNumber} (${logPrefix}), log: logs/${name}.log`);
-  rmSync(join(reproDir, 'logs', `${name}.log`), { force: true });
+  const logName = `${logPrefix}-run${renovateRunNumber}`;
+  log(`Renovate run ${renovateRunNumber} (${logPrefix}), log: logs/${logName}.log`);
+  rmSync(join(reproDir, 'logs', `${logName}.log`), { force: true });
   if (mode.kind === 'released') {
     run(
       'docker',
@@ -126,7 +126,7 @@ const runRenovate = (
         `RENOVATE_GERRIT_PASSWORD=${renovatePassword}`,
         'renovate',
       ],
-      { env: { LOG_NAME: name } },
+      { env: { LOG_NAME: logName } },
     );
     return;
   }
@@ -144,7 +144,7 @@ const runRenovate = (
     }),
     stdio: [
       'ignore',
-      openSync(join(reproDir, 'logs', `${name}.log`), 'w'),
+      openSync(join(reproDir, 'logs', `${logName}.log`), 'w'),
       'inherit',
     ],
   });
@@ -310,6 +310,11 @@ try {
   log('Change after run 2');
   const processedChange = await findRenovateChange(gerritUrl);
   printChange(processedChange);
+  if (processedChange.labels?.['Code-Review']?.rejected?.username !== 'admin') {
+    throw new Error(
+      `The Code-Review -2 of admin is missing from change ${processedChange._number}`,
+    );
+  }
   if (processedChange.status === 'ABANDONED') {
     log('Reproduced: Renovate abandoned the change voted Code-Review -2');
     process.exitCode = 1;

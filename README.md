@@ -7,7 +7,12 @@ until the reviewer lifts it
 ([config-labels](https://gerrit-review.googlesource.com/Documentation/config-labels.html#label_Code-Review)).
 A reviewer who votes -2 to hold an update back while a question is open sees
 Renovate abandon the change at its next run, and Renovate then ignores the
-whole major version, as it does for a pull request closed without merging.
+update (here every 7.x release), as it does for a pull request closed without
+merging.
+
+Renovate does this on purpose: each change description tells reviewers to
+"Abandon or vote this change with Code-Review -2" to ignore an update. That
+use of -2 conflicts with its meaning in Gerrit.
 
 Discussion: https://github.com/renovatebot/renovate/discussions/48060
 Proposed fix: https://github.com/renovatebot/renovate/pull/48061
@@ -25,7 +30,7 @@ node scripts/run.ts source ~/src/renovate    # any Renovate checkout, via pnpm s
 docker compose down -v                       # clean up
 ```
 
-Each invocation takes under two minutes once the images are pulled. It starts a
+Each invocation takes about 40 seconds once the images are pulled. It starts a
 fresh Gerrit 3.15.0 (development auth, default `admin`/`secret`) and then:
 
 1. creates the user `renovate` and the project `code-review-minus-2-demo` with
@@ -39,7 +44,8 @@ fresh Gerrit 3.15.0 (development auth, default `admin`/`secret`) and then:
 
 Renovate logs (debug) go to `logs/`. The script ends with `Reproduced` (exit
 code 1) when the change is abandoned, or `Not reproduced` (exit code 0) when
-it is still open. It fails if run 1 did not leave an open change.
+it is still open. It fails if run 1 did not leave an open change, or if the
+-2 is missing from the change after run 2.
 
 ## Current behavior
 
@@ -64,7 +70,8 @@ Output with Renovate 44.252.1:
 ==> Reproduced: Renovate abandoned the change voted Code-Review -2
 ```
 
-Renovate run from source on `main` (`da9664321d`) gives the same output.
+Renovate run from source on the pull request's base (`da9664321d`) gives the
+same output.
 
 ## Expected behavior
 
