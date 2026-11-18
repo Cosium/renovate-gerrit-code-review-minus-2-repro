@@ -30,7 +30,7 @@ node scripts/run.ts source ~/src/renovate    # any Renovate checkout, via pnpm s
 docker compose down -v                       # clean up
 ```
 
-Each invocation takes about 40 seconds once the images are pulled. It starts a
+Each invocation takes about 30 seconds once the images are pulled. It starts a
 fresh Gerrit 3.15.0 (development auth, default `admin`/`secret`) and then:
 
 1. creates the user `renovate` and the project `code-review-minus-2-demo` with
